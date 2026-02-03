@@ -119,7 +119,6 @@ sketch
 
 
 # Begin laravel new app
-
 /.phpunit.cache
 /bootstrap/ssr
 /node_modules
@@ -148,5 +147,15 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-
 # End laravel new app
+
+# Begin laravel boost
+.mcp.json
+boost.json
+CLAUDE.md
+.claude/skills/developing-with-fortify/SKILL.md
+.claude/skills/inertia-react-development/SKILL.md
+.claude/skills/pest-testing/SKILL.md
+.claude/skills/tailwindcss-development/SKILL.md
+.claude/skills/wayfinder-development/SKILL.md
+# End laravel boost
