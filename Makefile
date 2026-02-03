@@ -22,6 +22,9 @@ logs: ## View container logs
 
 ## Applicaton development commands
 
+ai: ## Install/Update Laravel Boost
+	php artisan boost:install
+
 setup: ## Initial setup
 	composer setup
 
