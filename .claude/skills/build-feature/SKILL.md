@@ -126,7 +126,7 @@ SUBAGENTS_DIR: `${CLAUDE_PLUGIN_ROOT}/agents/`
 When deploying a coder agent, include this context in the prompt:
 
 ```
-You are building part of a feature implementation.
+You are building part of a feature for a Laravel 12 / Inertia v2 / React 19 / Pest 4 project.
 
 ## Your Task
 <task name and description from the plan>
@@ -144,15 +144,19 @@ You are building part of a feature implementation.
 
 ## Instructions
 - Complete ALL actions listed above.
-- Follow existing code patterns and conventions in the codebase.
-- If you need more context, read the full feature plan at the path above.
+- Read sibling files before writing to match existing patterns.
+- PHP: Thin controllers, Form Requests for validation (array-syntax rules), `casts()` method on models, explicit return types, `route()` helper for named routes.
+- React: `<Form {...Controller.action.form()}>` for forms, Wayfinder imports from `@/actions/` and `@/routes/`, `kebab-case.tsx` files, existing `@/components/ui/` components.
+- Tests: Pest 4, flat `test()` functions, `User::factory()->create()`, named routes in assertions.
+- Run `php artisan test --compact` for relevant tests and `npm run types` for frontend changes.
+- Formatting (Pint, ESLint, Prettier) runs automatically via Stop hook — do not run formatters.
 - When done, provide a summary of what you built and what files you changed.
 ```
 
 ## Prompt Template for Reviewer Agent
 
 ```
-You are reviewing and validating code written for a feature implementation.
+You are reviewing code for a Laravel 12 / Inertia v2 / React 19 / Pest 4 project.
 
 ## Feature
 - **Name**: <feature name>
@@ -175,7 +179,8 @@ You are reviewing and validating code written for a feature implementation.
 - Read every file listed above.
 - Run every validation command and record the results.
 - Check every acceptance criterion.
-- Review for correctness, tests, security, quality, and codebase fit.
+- Review for: correctness, proper Laravel/React patterns (Form Requests, Wayfinder, Inertia v2 forms, Pest tests), security, quality, codebase fit.
+- Formatting is handled by the coder's Stop hook — do not check formatting.
 - Group findings into Must Fix and Recommended.
 - Return your verdict: APPROVED or CHANGES_REQUIRED.
 ```
@@ -185,7 +190,7 @@ You are reviewing and validating code written for a feature implementation.
 When redeploying a coder to address must-fix items from a review:
 
 ```
-You are fixing issues found during code review.
+You are fixing issues found during code review for a Laravel 12 / Inertia v2 / React 19 / Pest 4 project.
 
 ## Review Findings — Must Fix
 <paste the numbered must-fix items from the reviewer's report>
@@ -197,7 +202,8 @@ You are fixing issues found during code review.
 ## Instructions
 - Fix every must-fix item listed above. The reviewer provided file paths and descriptions of what's wrong.
 - Do NOT address "Recommended" items — only fix what's in the Must Fix list.
-- Run tests after your changes to make sure nothing is broken.
+- Run `php artisan test --compact` for affected tests and `npm run types` for frontend changes.
+- Formatting (Pint, ESLint, Prettier) runs automatically via Stop hook — do not run formatters.
 - Report what you fixed and what files you changed.
 ```
 

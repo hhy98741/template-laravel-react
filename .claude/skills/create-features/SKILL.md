@@ -8,7 +8,39 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash(mv:*), Bash(mkdir:*)
 
 # Create Features
 
-Find the next epic, explore the codebase to understand relevant patterns and architecture, then write a detailed implementation plan for each feature in the epic. Since all features in an epic are related and touch the same area of the codebase, this is done in a single pass — explore once, plan all.
+Find the next epic, explore the codebase to understand relevant files, then write a detailed implementation plan for each feature in the epic. Since all features in an epic are related and touch the same area of the codebase, this is done in a single pass — explore once, plan all.
+
+## Project Context
+
+This is a **Laravel 12 / Inertia v2 / React 19 / TypeScript / Pest 4** project. You already know the stack — use this knowledge when writing plans.
+
+**Backend (PHP 8.4)**:
+
+- Thin controllers → Form Request classes for validation (array-syntax rules, shared via `app/Concerns/` traits)
+- `Inertia::render()` for pages, `to_route()` / `back()` for redirects
+- Models: `casts()` method, `$fillable`, `$hidden`. Create with `php artisan make:model -mfs --no-interaction`
+- Middleware registered in `bootstrap/app.php`. Per-controller via `HasMiddleware` interface
+- Named routes with dot notation. `route()` helper everywhere
+- Eloquent relationships and `Model::query()` over `DB::`. Eager loading to prevent N+1
+- Fortify for auth actions in `app/Actions/Fortify/`
+
+**Frontend (React 19 + TypeScript)**:
+
+- Pages in `resources/js/pages/` (`kebab-case.tsx`), layouts in `resources/js/layouts/`
+- Forms: `<Form {...Controller.action.form()}>` render-prop pattern (Inertia v2)
+- Wayfinder: controller actions from `@/actions/...`, named routes from `@/routes/...`
+- Layouts: `<AppLayout>` (authenticated), `<AuthLayout>` (public), `<SettingsLayout>` (settings)
+- UI: shadcn/ui components in `@/components/ui/`, `cn()` for conditional classes, lucide-react icons
+- Types in `resources/js/types/`, shared data via `usePage<SharedData>()`
+
+**Testing (Pest 4)**:
+
+- Feature tests in `tests/Feature/` (auto-RefreshDatabase), unit tests in `tests/Unit/`
+- Flat `test()` functions, lowercase sentence-style names
+- `User::factory()->create()` with states, `fake()` helper, named route assertions
+- `assertInertia()` for Inertia page assertions
+
+**Formatting**: `vendor/bin/pint --dirty` (PHP), `npm run lint` + `npm run format` (TS/JS), `npm run types` (TypeScript)
 
 ## Variables
 
@@ -50,10 +82,10 @@ SUBAGENTS_DIR: `${CLAUDE_PLUGIN_ROOT}/agents/`
     - You will reference these agents in the Team Orchestration section of each feature plan.
 
 5. **Explore Codebase**
-    - Investigate the codebase to understand existing patterns, architecture, relevant files, and conventions. Use Read, Glob, and Grep.
-    - Focus your exploration on the areas relevant to this epic's features. Since all features in the epic are related, they will share much of the same context.
-    - Understand: project structure, relevant existing files, coding patterns, testing conventions, configuration patterns, and any existing infrastructure you can build on.
-    - This is the ONE exploration pass — make it thorough. Everything you learn here informs all feature plans.
+    - You already know the project's stack and conventions (see Project Context above). Do NOT spend time rediscovering the general architecture.
+    - Focus exploration on **feature-specific files**: existing controllers, models, pages, routes, tests, and components that the epic's features will touch or extend.
+    - Use Read, Glob, and Grep to find: relevant existing files, database tables/migrations in the feature area, existing tests for related functionality, route definitions, and any infrastructure to build on.
+    - This is the ONE exploration pass — make it thorough for the feature domain. Everything you learn here informs all feature plans.
 
 6. **Analyze Dependencies and Write Plans**
     - Look at ALL features in the epic (both already-planned and remaining) and determine:
@@ -94,7 +126,7 @@ SUBAGENTS_DIR: `${CLAUDE_PLUGIN_ROOT}/agents/`
 
 Write each feature plan in this EXACT format. Replace `<requested content>` placeholders with actual content. Anything NOT in `<requested content>` should be written EXACTLY as shown.
 
-```md
+````md
 # Feature: <Feature Name>
 
 **Epic**: <epic filename>
@@ -112,7 +144,7 @@ Write each feature plan in this EXACT format. Replace `<requested content>` plac
 
 ## Solution Approach
 
-<describe the proposed technical approach. How will this be implemented? What patterns should be followed? What architecture decisions need to be made? Include code examples or pseudo-code where appropriate to clarify complex concepts.>
+<describe the proposed technical approach using project-specific patterns: which controllers, Form Requests, models, migrations, React pages, and components to create or modify. Reference concrete patterns — e.g., "Create a Form Request with array-syntax rules", "Use Inertia v2 <Form> render-prop pattern", "Add Pest feature tests using factory states". Include code examples or pseudo-code where appropriate.>
 
 ## Relevant Files
 
@@ -187,11 +219,23 @@ Use these files to complete the task:
 
 Execute these commands to validate the feature is complete:
 
-<list specific commands to validate the work — tests, type checks, linting, etc.>
+```bash
+# Run feature-specific tests
+php artisan test --compact --filter=<relevant test file or name>
+
+# TypeScript type checking (if frontend changes)
+npm run types
+```
+````
+
+> Formatting (Pint, ESLint, Prettier) is applied automatically by the coder agent's Stop hook and does not need to be run manually.
+
+<add or modify commands as needed for this specific feature>
 
 ## Notes
 
 <optional additional context, considerations, edge cases, or dependencies>
+
 ```
 
 ## Report
@@ -199,6 +243,7 @@ Execute these commands to validate the feature is complete:
 After all features are planned, provide this summary:
 
 ```
+
 Feature plans created.
 
 Epic: <epic filename>
@@ -208,11 +253,13 @@ Features skipped (already planned): <count or "None">
 Available agents: <list agent names discovered>
 
 Build Order:
+
 1. <E###-F### feature name> (no feature dependencies)
 2. <E###-F### feature name> (depends on F###)
 3. ...
 
 Files created:
+
 - <E###-F###-name.md>
 - <E###-F###-name.md>
 - ...
@@ -222,4 +269,7 @@ Epic moved to: <EPICS_DONE_DIRECTORY/<filename>>
 Validation: <PASS or FAIL>
 <If PASS: "All features from the epic have corresponding feature plan files.">
 <If FAIL: list any features from the epic that are missing a file>
+
+```
+
 ```
