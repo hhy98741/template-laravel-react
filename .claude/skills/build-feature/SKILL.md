@@ -148,6 +148,7 @@ You are building part of a feature for a Laravel 12 / Inertia v2 / React 19 / Pe
 - PHP: Thin controllers, Form Requests for validation (array-syntax rules), `casts()` method on models, explicit return types, `route()` helper for named routes.
 - React: `<Form {...Controller.action.form()}>` for forms, Wayfinder imports from `@/actions/` and `@/routes/`, `kebab-case.tsx` files, existing `@/components/ui/` components.
 - Tests: Pest 4, flat `test()` functions, `User::factory()->create()`, named routes in assertions.
+- Browser tests: `tests/Browser/` for core user flows only. Smoke test all new pages with `assertNoSmoke()`. One dark mode spot check per feature. Desktop/Chrome only. Use `@data-test` selectors.
 - Run `php artisan test --compact` for relevant tests and `npm run types` for frontend changes.
 - Formatting (Pint, ESLint, Prettier) runs automatically via Stop hook — do not run formatters.
 - When done, provide a summary of what you built and what files you changed.

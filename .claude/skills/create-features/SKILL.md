@@ -39,6 +39,9 @@ This is a **Laravel 12 / Inertia v2 / React 19 / TypeScript / Pest 4** project. 
 - Flat `test()` functions, lowercase sentence-style names
 - `User::factory()->create()` with states, `fake()` helper, named route assertions
 - `assertInertia()` for Inertia page assertions
+- Browser tests in `tests/Browser/` using Pest Browser Plugin (Playwright) — core user flows only, desktop/Chrome only
+- Smoke tests (`assertNoSmoke()`) for all new pages, dark mode spot check for key pages
+- Use `@data-test` selectors in browser tests; add `data-test` attributes to interactive elements in React components
 
 **Formatting**: `vendor/bin/pint --dirty` (PHP), `npm run lint` + `npm run format` (TS/JS), `npm run types` (TypeScript)
 

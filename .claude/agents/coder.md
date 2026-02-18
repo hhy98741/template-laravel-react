@@ -18,7 +18,7 @@ You are a focused coding agent for a **Laravel 12 / Inertia v2 / React 19 / Type
 
 - **Backend**: PHP 8.4, Laravel 12, Fortify (headless auth), Wayfinder (route generation)
 - **Frontend**: React 19, Inertia.js v2, TypeScript, Tailwind CSS v4, shadcn/ui components (Radix + CVA)
-- **Testing**: Pest 4 (all tests), RefreshDatabase on all Feature tests
+- **Testing**: Pest 4 (all tests), RefreshDatabase on all Feature tests, Pest Browser Plugin (Playwright) for browser tests
 - **Formatting**: Laravel Pint (PHP), ESLint + Prettier (TS/JS)
 - **Icons**: lucide-react
 - **Build**: Vite with `@tailwindcss/vite` plugin, React Compiler enabled
@@ -81,6 +81,8 @@ Before writing any code:
 
 All tests use **Pest 4**. Create tests with `php artisan make:test --pest {name}` (feature) or `--pest --unit` (unit).
 
+#### Feature & Unit Tests
+
 **Structure**:
 
 - Feature tests in `tests/Feature/` — grouped by domain (e.g., `Auth/`, `Settings/`)
@@ -104,6 +106,62 @@ All tests use **Pest 4**. Create tests with `php artisan make:test --pest {name}
 - Happy path, edge cases, error cases
 - For bug fixes: regression test first, then fix
 - Each test is independent and tests one thing
+
+#### Browser Tests (Pest Browser Plugin)
+
+Browser tests use `pestphp/pest-plugin-browser` (Playwright-based). They run in real Chrome and test actual user interactions. Browser tests are **slow** — use them only for core user flows, not edge cases.
+
+**Structure**:
+
+- Browser tests in `tests/Browser/` — grouped by domain
+- Use flat `test()` functions, same as feature tests
+- All browser tests have access to `RefreshDatabase`, factories, and Laravel test helpers
+
+**When to write browser tests**:
+
+- **Core user flows**: Login, registration, form submissions, navigation that involves JS interaction
+- **Smoke tests**: Every new page gets a smoke test — `visit(['/new-page'])->assertNoSmoke()`
+- **Dark mode**: Add `->inDarkMode()` variant for key pages (one dark mode smoke test per feature, not per test)
+- Do NOT browser-test things that feature tests already cover (validation errors, authorization, redirects)
+
+**Conventions**:
+
+- Desktop only — do not use `->on()->mobile()` or device emulation
+- Chrome only (default) — do not specify other browsers
+- Use `@data-test` selectors for interactions: `$page->click('@submit-button')` (maps to `data-test="submit-button"`)
+- Use `$this->actingAs($user)` before `visit()` for authenticated flows
+- Combine related assertions in one test to minimize browser launches
+- Use `assertNoSmoke()` for quick page health checks (checks JS errors + console logs)
+
+**Example patterns**:
+
+```php
+// Smoke test for new pages
+test('new pages load without errors', function () {
+    $this->actingAs(User::factory()->create());
+
+    visit(['/new-page', '/other-page'])->assertNoSmoke();
+});
+
+// Core user flow
+test('user can submit the form', function () {
+    $this->actingAs(User::factory()->create());
+
+    $page = visit('/some-page');
+
+    $page->fill('name', 'New Name')
+         ->fill('email', 'new@example.com')
+         ->click('@save-button')
+         ->assertSee('Saved successfully');
+});
+
+// Dark mode spot check
+test('page renders correctly in dark mode', function () {
+    $this->actingAs(User::factory()->create());
+
+    visit('/dashboard')->inDarkMode()->assertNoSmoke();
+});
+```
 
 ### 5. Verify
 
