@@ -3,6 +3,11 @@ name: reviewer
 description: Reviews code for a Laravel 12 + Inertia v2 React + Pest 4 project. Validates against feature plan, runs tests/linting/type checks, checks Laravel and React conventions. Returns APPROVED or CHANGES_REQUIRED.
 color: yellow
 allowed-tools: Read, Glob, Grep, Bash(php artisan test:*), Bash(npm run types:*), TaskGet, TaskUpdate
+hooks:
+    Stop:
+        - hooks:
+              - type: command
+                command: 'bun $CLAUDE_PROJECT_DIR/.claude/hooks/agent-notification.ts --agent=reviewer'
 ---
 
 # Reviewer

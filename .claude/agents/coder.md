@@ -8,6 +8,8 @@ hooks:
         - hooks:
               - type: command
                 command: 'git add -A && npx lint-staged 2>/dev/null; true'
+              - type: command
+                command: 'bun $CLAUDE_PROJECT_DIR/.claude/hooks/agent-notification.ts --agent=coder'
 ---
 
 # Coder
