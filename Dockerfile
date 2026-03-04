@@ -4,11 +4,7 @@ FROM php:8.4-fpm AS builder
 # Install system dependencies and PHP extensions required for Laravel + MySQL support
 # Some dependencies are required for PHP extensions only in the build stage
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    git \
-    unzip \
-    vim \
-    wget \
+    curl gh git openssh-server pulseaudio unzip vim wget \
     libpng-dev \
     libonig-dev \
     libssl-dev \
@@ -28,7 +24,8 @@ RUN docker-php-ext-install -j$(nproc) \
     gd \
     zip \
     intl \
-    opcache
+    opcache \
+    sockets
 
 RUN pecl install redis && \
     pecl install xdebug && \
@@ -42,6 +39,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean
 
+# Install Bun
+ENV BUN_INSTALL="/opt/bun"
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="${BUN_INSTALL}/bin:${PATH}"
+
+# Install Playwright
+RUN npx -y playwright install --with-deps chromium
+
+# Clean up
 RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
@@ -68,13 +74,13 @@ USER laravel
 
 # Install Claude Code
 RUN curl -fsSL https://claude.ai/install.sh | bash
+ENV PATH="/home/laravel/.local/bin:${PATH}"
 
-RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && \
-    echo 'alias ll="ls -alh"' >> ~/.bashrc && \
+RUN echo 'alias ll="ls -alh"' >> ~/.bashrc && \
     echo 'alias cld="claude"' >> ~/.bashrc && \
     echo 'alias cldc="claude --continue"' >> ~/.bashrc && \
-    echo 'alias cldyolo="claude --dangerously-skip-permissions"' >> ~/.bashrc && \
-    echo 'alias cldcyolo="claude --continue --dangerously-skip-permissions"' >> ~/.bashrc 
+    echo 'alias cldy="claude --dangerously-skip-permissions"' >> ~/.bashrc && \
+    echo 'alias cldyc="claude --dangerously-skip-permissions --continue "' >> ~/.bashrc 
 
 EXPOSE 8000 5173
 
